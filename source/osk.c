@@ -16,6 +16,8 @@
 #define OSK_BG_COLOUR_DARK  SDL_MakeColour(39, 50, 56, 255)
 #define OSK_SELECTED_COLOUR SDL_MakeColour(77, 182, 172, 255)
 
+char osk_buffer[256];
+
 static int osk_index = 0;
 
 static const char *osk_textdisp[] = 

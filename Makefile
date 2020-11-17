@@ -1,21 +1,30 @@
-BASEDIR	:= $(dir $(firstword $(MAKEFILE_LIST)))
-VPATH	:= $(BASEDIR)
+#-------------------------------------------------------------------------------
+.SUFFIXES:
+#-------------------------------------------------------------------------------
 
-PKGCONF			:=	$(DEVKITPRO)/portlibs/ppc/bin/powerpc-eabi-pkg-config
-PKGCONF_WIIU	:=	$(DEVKITPRO)/portlibs/wiiu/bin/powerpc-eabi-pkg-config
+ifeq ($(strip $(DEVKITPRO)),)
+$(error "Please set DEVKITPRO in your environment. export DEVKITPRO=<path to>/devkitpro")
+endif
 
-#---------------------------------------------------------------------------------
+TOPDIR ?= $(CURDIR)
+
+include $(DEVKITPRO)/wut/share/wut_rules
+
+#-------------------------------------------------------------------------------
 # TARGET is the name of the output
+# BUILD is the directory where object files & intermediate files will be placed
 # SOURCES is a list of directories containing source code
+# DATA is a list of directories containing data files
 # INCLUDES is a list of directories containing header files
-# ROMFS is a folder to generate app's romfs
-#---------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 TARGET		:=	WiiU-Shell
+BUILD		:=	build
 SOURCES		:=	source \
 				source/audio \
 				source/menus \
 				source/minizip \
 				source/menus/menu_book_reader
+DATA		:=	data
 INCLUDES    :=	include \
 				include/audio \
 				include/menus \
@@ -26,61 +35,119 @@ VERSION_MAJOR := 1
 VERSION_MINOR := 0
 VERSION_MICRO := 4
 
-#---------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 # options for code generation
-#---------------------------------------------------------------------------------
-CFLAGS		+=	-O2 -std=c11 -Wall -Wno-format-truncation -U__STRICT_ANSI__ \
-				-DVERSION_MAJOR=$(VERSION_MAJOR) -DVERSION_MINOR=$(VERSION_MINOR) -DVERSION_MICRO=$(VERSION_MICRO)
-CXXFLAGS	+=	-O2 -Wall -Wno-format-truncation -U__STRICT_ANSI__ \
-				-DVERSION_MAJOR=$(VERSION_MAJOR) -DVERSION_MINOR=$(VERSION_MINOR) -DVERSION_MICRO=$(VERSION_MICRO) 
+#-------------------------------------------------------------------------------
+CFLAGS	:=	-g -Wall -O2 -ffunction-sections $(MACHDEP)
 
-#---------------------------------------------------------------------------------
-# libraries
-#---------------------------------------------------------------------------------
-CFLAGS		+=	`$(PKGCONF_WIIU) --cflags SDL2_gfx SDL2_image SDL2_mixer SDL2_ttf sdl2`
-CXXFLAGS	+=	`$(PKGCONF_WIIU) --cflags SDL2_gfx SDL2_image SDL2_mixer SDL2_ttf sdl2`
-LDFLAGS		+=	`$(PKGCONF_WIIU) --libs SDL2_gfx SDL2_image SDL2_mixer SDL2_ttf sdl2` \
-				`$(PKGCONF) --libs freetype2 zlib libpng libjpeg libmpg123`
+CFLAGS	+=	$(INCLUDE) -D__WIIU__ -D__WUT__ -std=c11 -Wno-format-truncation -U__STRICT_ANSI__ \
+			-DVERSION_MAJOR=$(VERSION_MAJOR) -DVERSION_MINOR=$(VERSION_MINOR) -DVERSION_MICRO=$(VERSION_MICRO)
 
-#---------------------------------------------------------------------------------
-# wut libraries
-#---------------------------------------------------------------------------------
-LDFLAGS		+=	$(WUT_NEWLIB_LDFLAGS) $(WUT_STDCPP_LDFLAGS) \
-				-lcoreinit -lvpad -lsndcore2 -lnsysnet -lsysapp -lproc_ui -lgx2 -lgfd -lwhb
+CXXFLAGS	:= $(CFLAGS)
 
-#---------------------------------------------------------------------------------
+ASFLAGS	:=	-g $(ARCH)
+LDFLAGS	=	-g $(ARCH) $(RPXSPECS) -Wl,-Map,$(notdir $*.map)
+
+LIBS	:= -lSDL2_ttf -lSDL2_mixer -lSDL2_image -lSDL2_gfx -lSDL2 -lmpg123 -lfreetype -lpng -ljpeg -lbz2 -lz -lwut -lm
+
+#-------------------------------------------------------------------------------
+# list of directories containing libraries, this must be the top level
+# containing include and lib
+#-------------------------------------------------------------------------------
+LIBDIRS	:= $(PORTLIBS) $(WUT_ROOT)
+
 # romfs
-#---------------------------------------------------------------------------------
-include $(WUT_ROOT)/share/romfs-wiiu.mk
-LDFLAGS		+=	$(ROMFS_LDFLAGS)
-OBJECTS		+=	$(ROMFS_TARGET)
+include $(PORTLIBS_PATH)/wiiu/share/romfs-wiiu.mk
+CFLAGS		+=	$(ROMFS_CFLAGS)
+CXXFLAGS	+=	$(ROMFS_CFLAGS)
+LIBS		+=	$(ROMFS_LIBS)
+OFILES		+=	$(ROMFS_TARGET)
 
-#---------------------------------------------------------------------------------
-# includes
-#---------------------------------------------------------------------------------
-CFLAGS		+=	$(foreach dir,$(INCLUDES),-I$(dir))
-CXXFLAGS	+=	$(foreach dir,$(INCLUDES),-I$(dir))
+#-------------------------------------------------------------------------------
+# no real need to edit anything past this point unless you need to add additional
+# rules for different file extensions
+#-------------------------------------------------------------------------------
+ifneq ($(BUILD),$(notdir $(CURDIR)))
+#-------------------------------------------------------------------------------
 
-#---------------------------------------------------------------------------------
-# generate a list of objects
-#---------------------------------------------------------------------------------
-CFILES		:=	$(foreach dir,$(SOURCES),$(wildcard $(dir)/*.c))
-CPPFILES	:=	$(foreach dir,$(SOURCES),$(wildcard $(dir)/*.cpp))
-SFILES		:=	$(foreach dir,$(SOURCES),$(wildcard $(dir)/*.S))
-OBJECTS		+=	$(CPPFILES:.cpp=.o) $(CFILES:.c=.o) $(SFILES:.s=.o)
+export OUTPUT	:=	$(CURDIR)/$(TARGET)
+export TOPDIR	:=	$(CURDIR)
 
-#---------------------------------------------------------------------------------
-# targets
-#---------------------------------------------------------------------------------
-$(TARGET).rpx: $(OBJECTS)
+export VPATH	:=	$(foreach dir,$(SOURCES),$(CURDIR)/$(dir)) \
+			$(foreach dir,$(DATA),$(CURDIR)/$(dir))
 
+export DEPSDIR	:=	$(CURDIR)/$(BUILD)
+
+CFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.c)))
+CPPFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.cpp)))
+SFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.s)))
+BINFILES	:=	$(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.*)))
+
+#-------------------------------------------------------------------------------
+# use CXX for linking C++ projects, CC for standard C
+#-------------------------------------------------------------------------------
+ifeq ($(strip $(CPPFILES)),)
+#-------------------------------------------------------------------------------
+	export LD	:=	$(CC)
+#-------------------------------------------------------------------------------
+else
+#-------------------------------------------------------------------------------
+	export LD	:=	$(CXX)
+#-------------------------------------------------------------------------------
+endif
+#-------------------------------------------------------------------------------
+
+export OFILES_BIN	:=	$(addsuffix .o,$(BINFILES))
+export OFILES_SRC	:=	$(CPPFILES:.cpp=.o) $(CFILES:.c=.o) $(SFILES:.s=.o)
+export OFILES 	:=	$(OFILES_BIN) $(OFILES_SRC)
+export HFILES_BIN	:=	$(addsuffix .h,$(subst .,_,$(BINFILES)))
+
+export INCLUDE	:=	$(foreach dir,$(INCLUDES),-I$(CURDIR)/$(dir)) \
+			$(foreach dir,$(LIBDIRS),-I$(dir)/include) \
+			-I$(CURDIR)/$(BUILD)
+
+export LIBPATHS	:=	$(foreach dir,$(LIBDIRS),-L$(dir)/lib)
+
+.PHONY: $(BUILD) clean all
+
+#-------------------------------------------------------------------------------
+all: $(BUILD)
+
+$(BUILD):
+	@[ -d $@ ] || mkdir -p $@
+	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
+
+#-------------------------------------------------------------------------------
 clean:
-	$(info clean ...)
-	@rm -rf $(TARGET).rpx $(OBJECTS) $(OBJECTS:.o=.d)
+	@echo clean ...
+	@rm -fr $(BUILD) $(TARGET).rpx $(TARGET).elf
 
-.PHONY: clean
+#-------------------------------------------------------------------------------
+else
+.PHONY:	all
 
-#---------------------------------------------------------------------------------
-# wut
-#---------------------------------------------------------------------------------
-include $(WUT_ROOT)/share/wut.mk
+DEPENDS	:=	$(OFILES:.o=.d)
+
+#-------------------------------------------------------------------------------
+# main targets
+#-------------------------------------------------------------------------------
+all	:	$(OUTPUT).rpx
+
+$(OUTPUT).rpx	:	$(OUTPUT).elf
+$(OUTPUT).elf	:	$(OFILES)
+
+$(OFILES_SRC)	: $(HFILES_BIN)
+
+#-------------------------------------------------------------------------------
+# you need a rule like this for each extension you use as binary data
+#-------------------------------------------------------------------------------
+%.bin.o	%_bin.h :	%.bin
+#-------------------------------------------------------------------------------
+	@echo $(notdir $<)
+	@$(bin2o)
+
+-include $(DEPENDS)
+
+#-------------------------------------------------------------------------------
+endif
+#-------------------------------------------------------------------------------
