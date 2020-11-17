@@ -7,6 +7,8 @@
 #include "menu_main.h"
 #include "textures.h"
 
+#include <coreinit/memory.h>
+
 #ifdef DEBUG
 
 #include <unistd.h>
@@ -78,11 +80,15 @@ static void Init_Services(void)
 	Mix_Init(MIX_INIT_FLAC | MIX_INIT_MOD | MIX_INIT_MP3 | MIX_INIT_OGG | MIX_INIT_MID);
 	Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 4096);
 
+	void* fontData = NULL;
+	uint32_t fontSize = 0;
+	OSGetSharedData(OS_SHAREDDATATYPE_FONT_STANDARD, 0, &fontData, &fontSize);
+
 	TTF_Init();
-	Roboto_large = TTF_OpenFont("romfs:/res/Roboto-Regular.ttf", 30);
-	Roboto = TTF_OpenFont("romfs:/res/Roboto-Regular.ttf", 25);
-	Roboto_small = TTF_OpenFont("romfs:/res/Roboto-Regular.ttf", 20);
-	Roboto_OSK = TTF_OpenFont("romfs:/res/Roboto-Regular.ttf", 50);
+	Roboto_large = TTF_OpenFontRW(SDL_RWFromMem(fontData, fontSize), TRUE, 30);
+	Roboto = TTF_OpenFontRW(SDL_RWFromMem(fontData, fontSize), TRUE, 25);
+	Roboto_small = TTF_OpenFontRW(SDL_RWFromMem(fontData, fontSize), TRUE, 20);
+	Roboto_OSK = TTF_OpenFontRW(SDL_RWFromMem(fontData, fontSize), TRUE, 50);
 	if (!Roboto_large || !Roboto || !Roboto_small || !Roboto_OSK)
 		Term_Services();
 
