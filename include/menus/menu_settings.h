@@ -1,6 +1,3 @@
-#ifndef WIIU_SHELL_SETTINGS_H
-#define WIIU_SHELL_SETTINGS_H
+#pragma once
 
 void Menu_DisplaySettings(void);
-
-#endif

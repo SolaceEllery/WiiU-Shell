@@ -1,10 +1,11 @@
-#ifndef WIIU_SHELL_SDL_HELPER_H
-#define WIIU_SHELL_SDL_HELPER_H
+#pragma once
 
-static inline SDL_Color SDL_MakeColour(Uint8 r, Uint8 g, Uint8 b, Uint8 a)
-{
-	SDL_Color colour = {r, g, b, a};
-	return colour;
+#include <SDL2/SDL.h>
+#include "SDL_FontCache.h"
+
+static inline SDL_Color SDL_MakeColour(Uint8 r, Uint8 g, Uint8 b, Uint8 a) {
+    SDL_Color colour = {r, g, b, a};
+    return colour;
 }
 
 #define WHITE                 SDL_MakeColour(255, 255, 255, 255)
@@ -26,10 +27,8 @@ void SDL_ClearScreen(SDL_Renderer *renderer, SDL_Color colour);
 void SDL_DrawRect(SDL_Renderer *renderer, int x, int y, int w, int h, SDL_Color colour);
 void SDL_DrawCircle(SDL_Renderer *renderer, int x, int y, int r, SDL_Color colour);
 void SDL_DrawText(SDL_Renderer *renderer, FC_Font *font, int x, int y, SDL_Color colour, const char *text);
-void SDL_DrawTextf(SDL_Renderer *renderer, FC_Font *font, int x, int y, SDL_Color colour, const char* text, ...);
+void SDL_DrawTextf(SDL_Renderer *renderer, FC_Font *font, int x, int y, SDL_Color colour, const char *text, ...);
 void SDL_LoadImage(SDL_Renderer *renderer, SDL_Texture **texture, char *path);
 void SDL_LoadImageBuf(SDL_Renderer *renderer, SDL_Texture **texture, void *mem, int size);
 void SDL_DrawImage(SDL_Renderer *renderer, SDL_Texture *texture, int x, int y);
 void SDL_DrawImageScale(SDL_Renderer *renderer, SDL_Texture *texture, int x, int y, int w, int h);
-
-#endif

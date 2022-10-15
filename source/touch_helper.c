@@ -1,33 +1,30 @@
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
 
 #include "input_helper.h"
 #include "touch_helper.h"
 
 #define TAP_MOVEMENT_GAP 20
-#define LONG_TAP_PERIOD 2
+#define LONG_TAP_PERIOD  2
 
 
-void Touch_Init(TouchInfo * touchInfo)
-{
+void Touch_Init(TouchInfo *touchInfo) {
     touchInfo->state = TouchNone;
     touchInfo->tapType = TapNone;
 }
 
-void Touch_Process(TouchInfo * touchInfo)
-{
+void Touch_Process(TouchInfo *touchInfo) {
     TouchPosition currentTouch;
     uint32_t touches = Input_TouchCount();
-    
+
     if (touches >= 1)
         Input_TouchPos(&currentTouch, 0);
-        
+
     time_t current_time = time(NULL);
-    
+
     // On touch start.
-    if (touches == 1 && (touchInfo->state == TouchNone || touchInfo->state == TouchEnded))
-    {
+    if (touches == 1 && (touchInfo->state == TouchNone || touchInfo->state == TouchEnded)) {
         touchInfo->state = TouchStart;
         touchInfo->firstTouch = currentTouch;
         touchInfo->prevTouch = currentTouch;
@@ -35,8 +32,7 @@ void Touch_Process(TouchInfo * touchInfo)
         touchInfo->touchStart = current_time;
     }
     // On touch moving.
-    else if (touches >= 1 && touchInfo->state != TouchNone)
-    {
+    else if (touches >= 1 && touchInfo->state != TouchNone) {
         touchInfo->state = TouchMoving;
         touchInfo->prevTouch = currentTouch;
 

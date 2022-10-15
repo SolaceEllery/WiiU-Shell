@@ -40,8 +40,7 @@
 
 */
 
-#ifndef _unz64_H
-#define _unz64_H
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -433,5 +432,3 @@ extern int ZEXPORT unzSetOffset (unzFile file, uLong pos);
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* _unz64_H */

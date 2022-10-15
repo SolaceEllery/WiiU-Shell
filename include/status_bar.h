@@ -1,6 +1,3 @@
-#ifndef WIIU_SHELL_STATUS_BAR_H
-#define WIIU_SHELL_STATUS_BAR_H
+#pragma once
 
 void StatusBar_DisplayTime(void);
-
-#endif

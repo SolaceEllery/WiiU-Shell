@@ -1,8 +1,8 @@
 #include <coreinit/core.h>
 #include <coreinit/dynload.h>
 #include <coreinit/foreground.h>
-#include <whb/proc.h>
 #include <proc_ui/procui.h>
+#include <whb/proc.h>
 
 #include "common.h"
 #include "state.h"
@@ -18,7 +18,7 @@ bool isAroma() {
 }
 
 bool AppRunning() {
-    if(isAroma()) {
+    if (isAroma()) {
         bool app = true;
         if (OSIsMainCore()) {
             switch (ProcUIProcessMessages(true)) {
@@ -47,7 +47,7 @@ bool AppRunning() {
 }
 
 void initState() {
-    if(isAroma()) {
+    if (isAroma()) {
         ProcUIInit(&OSSavesDone_ReadyToRelease);
         OSEnableHomeButtonMenu(true);
     } else

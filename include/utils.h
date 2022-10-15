@@ -1,5 +1,4 @@
-#ifndef WIIU_SHELL_UTILS_H
-#define WIIU_SHELL_UTILS_H
+#pragma once
 
 char *Utils_Basename(const char *filename);
 void Utils_GetSizeString(char *string, uint32_t size);
@@ -8,5 +7,3 @@ void Utils_SetMin(int *set, int value, int min);
 void Utils_AppendArr(char subject[], const char insert[], int pos);
 void debugInit();
 void debugPrintf(const char *str, ...);
-
-#endif

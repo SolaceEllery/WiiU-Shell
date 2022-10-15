@@ -1,6 +1,3 @@
-#ifndef WIIU_SHELL_MENU_MAIN_H
-#define WIIU_SHELL_MENU_MAIN_H
+#pragma once
 
 void Menu_Main(void);
-
-#endif
