@@ -45,7 +45,7 @@ static void Menu_DisplaySortSettings(void)
 	Touch_Init(&touchInfo);
 
 	int title_height = 0;
-	TTF_SizeText(Roboto_large, "Settings", NULL, &title_height);
+	title_height = FC_GetHeight(Roboto_large, "Settings");
 
 	const char *main_menu_items[] =
 	{
@@ -82,7 +82,7 @@ static void Menu_DisplaySortSettings(void)
 				if (i == selection)
 					SDL_DrawRect(RENDERER, 0, 140 + (73 * printed), 1280, 73, config_dark_theme? SELECTOR_COLOUR_DARK : SELECTOR_COLOUR_LIGHT);
 				
-				TTF_SizeText(Roboto, main_menu_items[i], NULL, &height);
+				height = FC_GetHeight(Roboto, main_menu_items[i]);
 				SDL_DrawText(RENDERER, Roboto, 40, 140 + ((73 - height)/2) + (73 * printed), config_dark_theme? WHITE : BLACK, main_menu_items[i]);
 
 				printed++;
@@ -164,13 +164,14 @@ static void Menu_TouchAboutDialog(TouchInfo touchInfo)
 static void Menu_DisplayAboutDialog(void)
 {
 	int text1_width = 0, text2_width = 0, text3_width = 0, text4_width = 0, text5_width = 0;
-	TTF_SizeText(Roboto_small, "WiiU Shell vX.X.X", &text1_width, NULL);
-	TTF_SizeText(Roboto_small, "Author: Joel16", &text2_width, NULL);
-	TTF_SizeText(Roboto_small, "Graphics: Preetisketch and CyanogenMod/LineageOS contributors", &text3_width, NULL);
-	TTF_SizeText(Roboto_small, "Touch screen: StevenMattera", &text4_width, NULL);
-	TTF_SizeText(Roboto_small, "E-Book Reader: rock88", &text5_width, NULL);
+	text1_width = FC_GetWidth(Roboto_small, "WiiU Shell vX.X.X");
+	text2_width = FC_GetWidth(Roboto_small, "Author: Joel16");
+	text3_width = FC_GetWidth(Roboto_small, "Graphics: Preetisketch and CyanogenMod/LineageOS contributors");
+	text4_width = FC_GetWidth(Roboto_small, "Touch screen: StevenMattera");
+	text5_width = FC_GetWidth(Roboto_small, "E-Book Reader: rock88");
 
-	TTF_SizeText(Roboto, "OK", &confirm_width, &confirm_height);
+	confirm_width = FC_GetWidth(Roboto, "OK");
+	confirm_height = FC_GetHeight(Roboto, "OK");
 
 	SDL_QueryTexture(dialog, NULL, NULL, &dialog_width, &dialog_height);
 
@@ -193,7 +194,7 @@ void Menu_DisplaySettings(void)
 	Touch_Init(&touchInfo);
 
 	int title_height = 0;
-	TTF_SizeText(Roboto_large, "Settings", NULL, &title_height);
+	title_height = FC_GetHeight(Roboto_large, "Settings");
 
 	const char *main_menu_items[] =
 	{
@@ -236,7 +237,7 @@ void Menu_DisplaySettings(void)
 				else
 					SDL_DrawImage(RENDERER, config_dark_theme? icon_toggle_on : icon_toggle_off, 1180 - toggle_button_width, 213 + ((73 - toggle_button_height) / 2));
 				
-				TTF_SizeText(Roboto, main_menu_items[i], NULL, &height);
+				height = FC_GetHeight(Roboto, main_menu_items[i]);
 				SDL_DrawText(RENDERER, Roboto, 40, 140 + ((73 - height)/2) + (73 * printed), config_dark_theme? WHITE : BLACK, main_menu_items[i]);
 
 				printed++;

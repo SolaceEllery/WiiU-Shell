@@ -9,8 +9,11 @@
 #include "menu_main.h"
 #include "state.h"
 #include "textures.h"
+#include "utils.h"
 
 #include <coreinit/memory.h>
+
+#define SCREEN_COLOR_BLACK        ((SDL_Color) { .r = 0x00, .g = 0x00, .b = 0x00, .a = 0xFF })
 
 #ifdef DEBUG
 
@@ -33,10 +36,10 @@ static void Term_Services(void)
 {
 	Textures_Free();
 	
-	TTF_CloseFont(Roboto_OSK);
-	TTF_CloseFont(Roboto_small);
-	TTF_CloseFont(Roboto);
-	TTF_CloseFont(Roboto_large);
+	FC_FreeFont(Roboto_OSK);
+	FC_FreeFont(Roboto_small);
+	FC_FreeFont(Roboto);
+	FC_FreeFont(Roboto_large);
 	TTF_Quit();
 
 	Mix_CloseAudio();
@@ -90,10 +93,14 @@ static void Init_Services(void)
 	OSGetSharedData(OS_SHAREDDATATYPE_FONT_STANDARD, 0, &fontData, &fontSize);
 
 	TTF_Init();
-	Roboto_large = TTF_OpenFontRW(SDL_RWFromMem(fontData, fontSize), TRUE, 30);
-	Roboto = TTF_OpenFontRW(SDL_RWFromMem(fontData, fontSize), TRUE, 25);
-	Roboto_small = TTF_OpenFontRW(SDL_RWFromMem(fontData, fontSize), TRUE, 20);
-	Roboto_OSK = TTF_OpenFontRW(SDL_RWFromMem(fontData, fontSize), TRUE, 50);
+	Roboto_large = FC_CreateFont();
+	Roboto = FC_CreateFont();
+	Roboto_small = FC_CreateFont();
+	Roboto_OSK = FC_CreateFont();
+	FC_LoadFont_RW(Roboto_large, RENDERER, SDL_RWFromMem(fontData, fontSize), 1, 30, SCREEN_COLOR_BLACK, TTF_STYLE_NORMAL);
+	FC_LoadFont_RW(Roboto, RENDERER, SDL_RWFromMem(fontData, fontSize), 1, 25, SCREEN_COLOR_BLACK, TTF_STYLE_NORMAL);
+	FC_LoadFont_RW(Roboto_small, RENDERER, SDL_RWFromMem(fontData, fontSize), 1, 20, SCREEN_COLOR_BLACK, TTF_STYLE_NORMAL);
+	FC_LoadFont_RW(Roboto_OSK, RENDERER, SDL_RWFromMem(fontData, fontSize), 1, 50, SCREEN_COLOR_BLACK, TTF_STYLE_NORMAL);
 	if (!Roboto_large || !Roboto || !Roboto_small || !Roboto_OSK)
 		Term_Services();
 
@@ -136,6 +143,7 @@ static void Init_Services(void)
 int main(int argc, char **argv)
 {
 	Init_Services();
+	debugInit();
 
 	if (setjmp(exitJmp)) 
 	{

@@ -1,5 +1,9 @@
+#include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
+#include <coreinit/time.h>
+#include <whb/log.h>
+#include <whb/log_udp.h>
 
 #include "utils.h"
 
@@ -50,4 +54,50 @@ void Utils_AppendArr(char subject[], const char insert[], int pos)
 	
 	strcpy(subject, buf);   // copy it back to subject
 	// deallocate buf[] here, if used malloc()
+}
+
+static const char days[7][4] = {
+    "Sun",
+    "Mon",
+    "Tue",
+    "Wed",
+    "Thu",
+    "Fri",
+    "Sat",
+};
+
+static const char months[12][4] = {
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Nov",
+    "Dec",
+};
+
+void debugInit()
+{
+    WHBLogUdpInit();
+}
+
+void debugPrintf(const char *str, ...)
+{
+    static char newStr[512];
+
+    OSCalendarTime now;
+    OSTicksToCalendarTime(OSGetTime(), &now);
+    sprintf(newStr, "%s %02d %s %d %02d:%02d:%02d.%03d\t", days[now.tm_wday], now.tm_mday, months[now.tm_mon], now.tm_year, now.tm_hour, now.tm_min, now.tm_sec, now.tm_msec);
+    size_t tss = strlen(newStr);
+
+    va_list va;
+    va_start(va, str);
+    vsnprintf(newStr + tss, 511 - tss, str, va);
+    va_end(va);
+
+    WHBLogPrint(newStr);
 }

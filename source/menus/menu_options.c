@@ -520,10 +520,13 @@ void Menu_ControlDeleteDialog(uint32_t input, TouchInfo touchInfo)
 void Menu_DisplayDeleteDialog(void)
 {
 	int text_width = 0;
-	TTF_SizeText(Roboto, "Do you want to continue?", &text_width, NULL);
+	text_width = FC_GetWidth(Roboto, "Do you want to continue?");
 
-	TTF_SizeText(Roboto, "YES", &delete_confirm_width, &delete_confirm_height);
-	TTF_SizeText(Roboto, "NO", &delete_cancel_width, &delete_cancel_height);
+	delete_confirm_width = FC_GetWidth(Roboto, "YES");
+	delete_confirm_height = FC_GetHeight(Roboto, "YES");
+
+	delete_cancel_width = FC_GetWidth(Roboto, "NO");
+	delete_cancel_height = FC_GetHeight(Roboto, "NO");
 
 	SDL_QueryTexture(dialog, NULL, NULL, &delete_width, &delete_height);
 
@@ -580,8 +583,8 @@ void Menu_DisplayProperties(void)
 		//SDL_DrawText(RENDERER, Roboto, 390, 333, config_dark_theme? TEXT_MIN_COLOUR_DARK : TEXT_MIN_COLOUR_LIGHT, "Created: ");
 		//SDL_DrawText(RENDERER, Roboto, 390, 383, config_dark_theme? TEXT_MIN_COLOUR_DARK : TEXT_MIN_COLOUR_LIGHT, "Modified: ");
 	}
-
-	TTF_SizeText(Roboto, "OK", &properties_ok_width, &properties_ok_height);
+	properties_ok_width = FC_GetWidth(Roboto, "OK");
+	properties_ok_height = FC_GetHeight(Roboto, "OK");
 	SDL_DrawRect(RENDERER, (890 - properties_ok_width) - 20, (595 - properties_ok_height) - 20, properties_ok_width + 40, properties_ok_height + 40, config_dark_theme? SELECTOR_COLOUR_DARK : SELECTOR_COLOUR_LIGHT);
 	SDL_DrawText(RENDERER, Roboto, 890 - properties_ok_width, 595 - properties_ok_height, config_dark_theme? TITLE_COLOUR_DARK : TITLE_COLOUR, "OK");
 }
@@ -806,7 +809,8 @@ void Menu_DisplayOptions(void)
 	SDL_DrawImage(RENDERER, config_dark_theme? options_dialog_dark : options_dialog, 350, 85);
 	SDL_DrawText(RENDERER, Roboto, 370, 133, config_dark_theme? TITLE_COLOUR_DARK : TITLE_COLOUR, "Actions");
 
-	TTF_SizeText(Roboto, "CANCEL", &options_cancel_width, &options_cancel_height);
+	options_cancel_width = FC_GetWidth(Roboto, "CANCEL");
+	options_cancel_height = FC_GetHeight(Roboto, "CANCEL");
 	SDL_DrawText(RENDERER, Roboto, 900 - options_cancel_width, 605 - options_cancel_height, config_dark_theme? TITLE_COLOUR_DARK : TITLE_COLOUR, "CANCEL");
 	
 	if (row == 0 && column == 0)

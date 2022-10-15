@@ -83,14 +83,15 @@ static void StatusBar_GetBatteryStatus(int x, int y)
 	else if (percent == -2)
 		snprintf(buf, 5, "UNKN");
 
-	TTF_SizeText(Roboto, buf, &width, NULL);
+	width = FC_GetWidth(Roboto, buf);
 	SDL_DrawText(RENDERER, Roboto, (x - width - 10), y, WHITE, buf);
 }
 
 void StatusBar_DisplayTime(void)
 {
 	int width = 0, height = 0;
-	TTF_SizeText(Roboto, Clock_GetCurrentTime(), &width, &height);
+	width = FC_GetWidth(Roboto, Clock_GetCurrentTime());
+	height = FC_GetHeight(Roboto, Clock_GetCurrentTime());
 
 	StatusBar_GetBatteryStatus(1260 - width - 44, (40 - height) / 2);
 	SDL_DrawText(RENDERER, Roboto, 1260 - width, (40 - height) / 2, WHITE, Clock_GetCurrentTime());

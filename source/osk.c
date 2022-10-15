@@ -92,13 +92,14 @@ static void OSK_HandleAppend(bool shift, bool caps, int x, int y)
 void OSK_Display(char *title, char *msg)
 {
 	int text_width = 0, text_height = 0;
-	TTF_SizeText(Roboto_OSK, " Q W E R T Y U I O P ", &text_width, &text_height);
+	text_width = FC_GetWidth(Roboto_OSK, " Q W E R T Y U I O P ");
+	text_height = FC_GetHeight(Roboto_OSK, " Q W E R T Y U I O P ");
 
 	int title_height = 0;
-	TTF_SizeText(Roboto_large, title, NULL, &title_height);
+	title_height = FC_GetHeight(Roboto_large, title);
 
 	int cursor_width = 0;
-	TTF_SizeText(Roboto_large, "|", &cursor_width, NULL);
+	cursor_width = FC_GetWidth(Roboto_large, "|");
 
 	char buf2[256];
 	int buf_width = 0, buf_height = 0, buf_width_curr;
@@ -131,9 +132,10 @@ void OSK_Display(char *title, char *msg)
 
 		if (strlen(osk_buffer) != 0)
 		{
-			TTF_SizeText(Roboto_large, osk_buffer, &buf_width, &buf_height);
+			buf_width = FC_GetWidth(Roboto_large, osk_buffer);
+			buf_height = FC_GetHeight(Roboto_large, osk_buffer);
 			snprintf(buf2, osk_index + 1, osk_buffer);
-			TTF_SizeText(Roboto_large, buf2, &buf_width_curr, NULL);
+			buf_width_curr = FC_GetWidth(Roboto_large, buf2);
 			SDL_DrawTextf(RENDERER, Roboto_large, (1280 - buf_width) / 2, 210, config_dark_theme? WHITE : BLACK, "%s", osk_buffer);
 		}
 

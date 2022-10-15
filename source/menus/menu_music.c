@@ -157,7 +157,7 @@ void Menu_PlayMusic(char *path)
 	Music_Play(path);
 
 	int title_height = 0;
-	TTF_SizeText(Roboto_large, title, NULL, &title_height);
+	title_height = FC_GetHeight(Roboto_large, title);
 
 	bool isPlaying = true;
 

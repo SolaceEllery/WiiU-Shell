@@ -7,7 +7,7 @@
 void ProgressBar_DisplayProgress(char *msg, char *src, uint32_t offset, uint32_t size)
 {
 	int text_width = 0;
-	TTF_SizeText(Roboto, src, &text_width, NULL);
+	text_width = FC_GetWidth(Roboto, src);
 
 	int width = 0, height = 0;
 	SDL_QueryTexture(config_dark_theme? dialog_dark : dialog, NULL, NULL, &width, &height);
