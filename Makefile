@@ -48,7 +48,7 @@ CXXFLAGS	:= $(CFLAGS)
 ASFLAGS	:=	-g $(ARCH)
 LDFLAGS	=	-g $(ARCH) $(RPXSPECS) -Wl,-Map,$(notdir $*.map)
 
-LIBS	:= -lSDL2_ttf -lSDL2_mixer -lSDL2_image -lSDL2_gfx -lSDL2 -lmpg123 -lfreetype -lpng -ljpeg -lbz2 -lz -lwut -lm
+LIBS	:= `$(PREFIX)pkg-config --libs SDL2_mixer SDL2_ttf SDL2_image SDL2_gfx` -lwut
 
 #-------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level
