@@ -6,6 +6,7 @@
 #include "fs.h"
 #include "menu_gallery.h"
 #include "SDL_helper.h"
+#include "state.h"
 #include "touch_helper.h"
 #include "input_helper.h"
 #include "utils.h"
@@ -86,7 +87,7 @@ void Gallery_DisplayImage(char *path)
 	uint64_t current_time = 0, last_time = 0;
 	float zoom_factor = 1.0f;
 
-	while(WHBProcIsRunning())
+	while(AppRunning())
 	{
 		SDL_ClearScreen(RENDERER, SDL_MakeColour(33, 39, 43, 255));
 		SDL_RenderClear(RENDERER);

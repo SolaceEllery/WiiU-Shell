@@ -8,6 +8,7 @@
 #include "menu_options.h"
 #include "menu_settings.h"
 #include "SDL_helper.h"
+#include "state.h"
 #include "status_bar.h"
 #include "textures.h"
 #include "touch_helper.h"
@@ -89,9 +90,6 @@ static void Menu_HandleMultiSelect(void)
 
 static void Menu_ControlHome(uint32_t input, TouchInfo touchInfo)
 {
-	if (input & KEY_PLUS)
-		longjmp(exitJmp, 1);
-
 	if (input & KEY_MINUS)
 	{
 		if (MENU_DEFAULT_STATE == MENU_STATE_MENUBAR)
@@ -220,7 +218,7 @@ void Menu_Main(void)
 
 	uint64_t current_time = 0, last_time = 0;
 
-	while(WHBProcIsRunning())
+	while(AppRunning())
 	{
 		last_time = current_time;
     	current_time = SDL_GetPerformanceCounter();

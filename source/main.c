@@ -1,10 +1,13 @@
 #include <stdio.h>
 #include <romfs-wiiu.h>
+#include <proc_ui/procui.h>
+#include <whb/proc.h>
 
 #include "common.h"
 #include "config.h"
 #include "fs.h"
 #include "menu_main.h"
+#include "state.h"
 #include "textures.h"
 
 #include <coreinit/memory.h>
@@ -40,10 +43,10 @@ static void Term_Services(void)
 	Mix_Quit();
 
 	IMG_Quit();
-
+/*
 	SDL_DestroyRenderer(RENDERER);
 	SDL_FreeSurface(WINDOW_SURFACE);
-	SDL_DestroyWindow(WINDOW);
+	SDL_DestroyWindow(WINDOW);*/
 
 	#ifdef DEBUG
 	WHBLogUdpDeinit();
@@ -55,6 +58,7 @@ static void Term_Services(void)
 
 static void Init_Services(void)
 {
+	initState();
 	romfsInit();
 	SDL_Init(SDL_INIT_EVERYTHING);
 
@@ -67,7 +71,8 @@ static void Init_Services(void)
 	devoptab_list[STD_ERR] = &dotab_stdout;
 	#endif
 
-	SDL_CreateWindowAndRenderer(1280, 720, 0, &WINDOW, &RENDERER);
+	WINDOW = SDL_CreateWindow(NULL, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 0, 0, SDL_WINDOW_FULLSCREEN_DESKTOP);
+	RENDERER = SDL_CreateRenderer(WINDOW, -1, SDL_RENDERER_ACCELERATED);
 
 	WINDOW_SURFACE = SDL_GetWindowSurface(WINDOW);
 
@@ -135,6 +140,9 @@ int main(int argc, char **argv)
 	if (setjmp(exitJmp)) 
 	{
 		Term_Services();
+		if(!isAroma())
+        	WHBProcShutdown();
+    	ProcUIShutdown();
 		return 0;
 	}
 

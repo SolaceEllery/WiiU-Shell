@@ -6,6 +6,7 @@
 #include "config.h"
 #include "osk.h"
 #include "SDL_helper.h"
+#include "state.h"
 #include "status_bar.h"
 #include "touch_helper.h"
 #include "input_helper.h"
@@ -116,7 +117,7 @@ void OSK_Display(char *title, char *msg)
 	int osk_pos_x = 0, osk_pos_y = 0, transp = 255;
 	bool osk_text_shift = false, osk_text_caps = false;
 
-	while(WHBProcIsRunning())
+	while(AppRunning())
 	{	
 		SDL_ClearScreen(RENDERER, config_dark_theme? BLACK_BG : WHITE);
 		SDL_DrawRect(RENDERER, 0, 0, 1280, 40, config_dark_theme? STATUS_BAR_DARK : STATUS_BAR_LIGHT);	// Status bar
@@ -241,9 +242,7 @@ void OSK_Display(char *title, char *msg)
 		else if (kDown & KEY_B)
 			OSK_HandleDelete();
 
-		if (kDown & KEY_PLUS)
-			break;
-		else if (kDown & KEY_MINUS)
+		if (kDown & KEY_MINUS)
 		{
 			osk_buffer[0] = '\0';
 			break;

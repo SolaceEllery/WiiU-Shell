@@ -7,6 +7,7 @@
 #include "dirbrowse.h"
 #include "menu_settings.h"
 #include "SDL_helper.h"
+#include "state.h"
 #include "status_bar.h"
 #include "textures.h"
 #include "touch_helper.h"
@@ -57,7 +58,7 @@ static void Menu_DisplaySortSettings(void)
 	int radio_button_width = 0, radio_button_height = 0; // 1180
 	SDL_QueryTexture(icon_radio_dark_on, NULL, NULL, &radio_button_width, &radio_button_height);
 
-	while(WHBProcIsRunning())
+	while(AppRunning())
 	{
 		SDL_ClearScreen(RENDERER, config_dark_theme? BLACK_BG : WHITE);
 		SDL_RenderClear(RENDERER);
@@ -206,7 +207,7 @@ void Menu_DisplaySettings(void)
 
 	displayAbout = false;
 
-	while(WHBProcIsRunning())
+	while(AppRunning())
 	{
 		SDL_ClearScreen(RENDERER, config_dark_theme? BLACK_BG : WHITE);
 		SDL_RenderClear(RENDERER);

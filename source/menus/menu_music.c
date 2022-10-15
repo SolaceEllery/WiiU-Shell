@@ -9,6 +9,7 @@
 #include "fs.h"
 #include "menu_music.h"
 #include "SDL_helper.h"
+#include "state.h"
 #include "status_bar.h"
 #include "textures.h"
 #include "touch_helper.h"
@@ -168,7 +169,7 @@ void Menu_PlayMusic(char *path)
 
 	bool locked = false;
 
-	while(WHBProcIsRunning())
+	while(AppRunning())
 	{
 		SDL_ClearScreen(RENDERER, MUSIC_STATUS_BG_COLOUR);
 		SDL_RenderClear(RENDERER);
@@ -237,9 +238,6 @@ void Menu_PlayMusic(char *path)
 					Music_HandleNext(false, MUSIC_STATE_SHUFFLE);
 			}
 		}
-
-		if (kDown & KEY_PLUS)
-			locked = !locked;
 
 		if (kDown & KEY_B)
 		{
